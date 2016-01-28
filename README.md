@@ -1,1 +1,1 @@
-semantic-knowledge-graph
+statistical-phrase-identifier
