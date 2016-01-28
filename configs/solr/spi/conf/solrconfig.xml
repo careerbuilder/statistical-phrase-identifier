@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+  <luceneMatchVersion>5.10</luceneMatchVersion>
+  <lib dir="../../lib" regex=".*\.jar" />
+  <dataDir>../../../cores/skg/data</dataDir>
+  <directoryFactory name="DirectoryFactory" 
+                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}">    
+  </directoryFactory> 
+  <codecFactory class="solr.SchemaCodecFactory"/>
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
+  <jmx />
+
+  <updateHandler class="solr.DirectUpdateHandler2">
+	<autoSoftCommit>
+       <maxTime>100000</maxTime>
+     </autoSoftCommit>
+
+    <updateLog>
+      <str name="dir">${solr.ulog.dir:}</str>
+    </updateLog>
+  </updateHandler>
+  
+  <query>
+    <useColdSearcher>false</useColdSearcher>
+    <maxWarmingSearchers>2</maxWarmingSearchers>
+  </query>
+  <requestDispatcher handleSelect="false" />
+
+  <requestHandler name="/select" class="solr.SearchHandler">
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+       <str name="omitHeader">true</str>
+       <int name="rows">10</int>
+       <str name="df">text</str>
+       <str name="q.op">AND</str>
+       <str name="wt">json</str>
+       <str name="indent">true</str>
+     </lst>
+    </requestHandler>
+
+	<requestHandler name="/parse" class="com.careerbuilder.search.semantic.ParseRequestHandler">
+		<lst name="defaults">
+		
+			<!-- the algorithm to use to parse. append, split, or cost -->
+			<str name="algorithm">split</str>
+			
+			<!-- the scorer to use in parsing. likelihood, bayes, chi -->
+			<str name="scorer">bayesdoc</str>
+			
+			<!-- number of potential parsings to return. only applicable to cost alg -->
+			<int name="limit">10</int>
+			
+			<!-- collocation occurrence frequency boost. artificially modifies the 
+				 corpus count before scoring a collocation. applicable to: 
+				 likelihood, chi-->
+			<double name="boost">1.0</double>
+			
+			<!-- cost model score sensitivity. the multiplier for the collocation
+			     score in the cost model -->
+			<double name="costModelScoreSensitivity">100</double>
+			
+			<!-- likelihood trigram score multiplier. use to boost 
+				 trigram likelihoods (vs bigram)-->
+			<double name="likelihoodTrigramMultiplier">1.0</double>
+
+			<!-- bayesdoc thresholds -->
+			<double name="trigramTitleThreshold">0.8211652098678617</double> 
+			<double name="trigramThreshold">0.0901623462538611</double>
+			<double name="bigramTitleThreshold"> 0.7246403063105</double> 
+			<double name="bigramThreshold">0.05430213493807576</double>
+			
+			<!-- whether to return scoring data in the result -->
+			<bool name="returnScoringOutput">false</bool>
+
+			<!-- the threshold type to filter unigrams as entities. 
+				frequency, probability, none-->
+			<str name="unigramThresholdType">frequency</str> 
+			<!-- the threshold to return unigrams as entities. 
+				unigrams with either observed probabilities or frequencies
+				lower than this are excluded from the parsing  -->
+			<double name="unigramProbabilityThreshold">1e-9</double>
+			<int name="unigramFrequencyThreshold">0</int>
+			
+		</lst>
+		<lst name="invariants">
+		
+			<!-- score to add to total phrase score based on length of each sub-phrase -->
+			<double name="costModel1GramScoring">0.1586</double>
+			<double name="costModel2GramScoring">0.4160</double>
+			<double name="costModel3GramScoring">0.2326</double>
+			<double name="costModel4GramScoring">0.1009</double>
+			<double name="costModel5GramScoring">0.0641</double>
+			<double name="costModel6GramScoring">0.0169</double>
+			<double name="costModel7GramScoring">0.0803</double>
+			<double name="costModel8GramScoring">0.0029</double>
+			<double name="costModel9GramScoring">0</double>
+			<double name="costModel10GramScoring">0</double>
+			<double name="costModel11GramScoring">0</double>
+			<double name="costModel12GramScoring">0</double>
+			<double name="costModel13GramScoring">0</double>
+			<double name="costModel14GramScoring">0</double>
+			<double name="costModel15GramScoring">0</double>
+			<double name="costModel16GramScoring">0</double>
+		</lst>
+	</requestHandler>
+
+  	<requestHandler name="/spi" class="com.careerbuilder.search.semantic.ParseRequestHandler">
+		<lst name="defaults">
+		</lst>
+		<lst name="invariants">
+		</lst>
+	</requestHandler>
+
+  <requestHandler name="/update" class="solr.UpdateRequestHandler" >
+  </requestHandler>
+
+  <requestHandler name="/analysis/field" 
+                  startup="lazy"
+                  class="solr.FieldAnalysisRequestHandler" />
+
+  <requestHandler name="/analysis/document" 
+                  class="solr.DocumentAnalysisRequestHandler" 
+                  startup="lazy" />
+
+  <requestHandler name="/admin/" 
+                  class="solr.admin.AdminHandlers" />
+  
+  <!-- ping/healthcheck -->
+  <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+    <lst name="invariants">
+      <str name="q">solrpingquery</str>
+    </lst>
+    <lst name="defaults">
+      <str name="echoParams">all</str>
+    </lst>
+    <str name="healthcheckFile">server-enabled</str>
+  </requestHandler>
+  
+
+  <requestHandler name="/replication" class="solr.ReplicationHandler" /> 
+
+  <searchComponent name="tvComponent" class="solr.TermVectorComponent"/>
+  
+  <searchComponent name="terms" class="solr.TermsComponent"/>
+
+  <!-- A request handler for demonstrating the terms component -->
+  <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
+     <lst name="defaults">
+      <bool name="terms">true</bool>
+      <bool name="distrib">false</bool>
+    </lst>     
+    <arr name="components">
+      <str>terms</str>
+    </arr>
+  </requestHandler>
+  
+  
+  <admin>
+    <defaultQuery>*:*</defaultQuery>
+  </admin>
+
+</config>
