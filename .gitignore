@@ -1,0 +1,6 @@
+.DS_Store
+.idea
+/lucene-solr
+/deploy
+/cores
+/spi/target
