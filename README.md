@@ -19,16 +19,8 @@ It is then possile to modify all the multi-word phrases prior to executing the s
 Of course, you could do your own query parsing to specifically handle the boolean syntax, but the following would eventually be interpreted correctly by Apache Solr and most other search engines:  
 *"machine learning" AND "research and development" AND "Portland, OR" AND "software engineer" AND hadoop AND java*
 
-##Running the Example
-To get you up and running quickly, we've included a complete end-to-end example for testing the Statistical Phrase Identifier. This includes example documents (using a sample Stack Exchange data set), the corresponding Solr configuration files (schema.xml, solrconfig.xml, etc.), and a script for starting Solr up to test the Statisical Phrase Identifier.
+#Building and Running
+The easiest way to build the Statistical Phrase Identifier is to run the `build.sh` script in the root directory of the project (or `rebuild.sh`, which will build and launch an Apache Solr instance with the Statistical Phrase Identifier configured). The final application will be found in the `deploy` directory, and you can launch it using the `restart-solr.sh` script found in that directory. You can simply copy this `deploy` folder to your production environment and run the `restart-solr.sh` script to launch the service. By default, you can hit it at `http://localhost:8983/solr/spi/parse`.
 
-...
-
-##Building Just the Solr Plugin
-The Statistical Phrase Identifier is a Request Handler for Apache Solr. If you only want to build the Apache Solr plugin and tie it into your currently-configured Solr environment, simply execute the following command:
-
-`cd /spi`  
-`mvn package`  
-
-You will then find the Statistical Phrase Identifier plugin jar at:
-.......
+#Using the System
+Once the Statistical Phrase Identifier project has been built, you need to indexing a corpus of data through it by running the `feed.sh` script. The fields you include in your corpus should correspond to the fields defined in your Solr `schema.xml` found in the `deploy/solr/spi/conf` directory.
