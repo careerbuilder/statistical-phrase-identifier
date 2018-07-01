@@ -1,7 +1,82 @@
-<schema name="blank" version="1.5">
+<schema name="statistical-phrase-identifier" version="1.5">
 
   <uniqueKey>id</uniqueKey>
 
   <fields>
+    <!--Incoming data required for successful operation-->
+
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    
+<!-- Required Fields: content, bigrams, trigrams, content_title, bigrams_title, trigrams_title 
+Should go back and make these configurable. While it will be a performance hit, we should also support dynamically generating bigrams and trigrams from unigram fields at query time.
+-->
+    <field name="title" type="string" indexed="false" stored="false" required="false" multiValued="false" />
+    <field name="description" type="string" indexed="false" stored="false" required="false" multiValued="false" />
+    <field name="content" type="text" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="bigrams" type="bigram" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="trigrams" type="trigram" indexed="true" stored="false" required="false" multiValued="true"/>
+    <field name="content_title" type="text" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="bigrams_title" type="bigram" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="trigrams_title" type="trigram" indexed="true" stored="false" required="false" multiValued="true"/>
+
+
+    <copyField source="title" dest="content_title" />
+    <copyField source="description" dest="content" />
+
+    <copyField source="title" dest="bigrams_title" />
+    <copyField source="description" dest="bigrams" />
+
+    <copyField source="title" dest="trigrams_title" />
+    <copyField source="description" dest="trigrams" />
+
+
+    <!--Solr operational stuff-->
+    <field name="_version_" type="long" indexed="true" stored="true"/>
+    <field name="text" type="text" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
   </fields>
+
+  <types>    
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+			<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="&lt;[\/]{0,1}[a-zA-Z]+[\s]{0,1}[\/]{0,1}&gt;" replacement=" | "/>
+            <charFilter class="solr.HTMLStripCharFilterFactory"/>
+	    	<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[\.\,\;\:\?\!\\\/]\s" replacement=" | "/>
+            <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory"/>
+            <filter class="solr.LowerCaseFilterFactory" />
+	    <filter class="solr.StopFilterFactory" words="filter_tokens.txt" ignoreCase="true"/>
+        </analyzer>
+    </fieldType>
+
+  <fieldType name="bigram" class="solr.TextField" positionIncrementGap="100">
+          <analyzer>
+	    	<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="&lt;[\/]{0,1}[a-zA-Z]+[\s]{0,1}[\/]{0,1}&gt;" replacement=" | "/>
+	    	<charFilter class="solr.HTMLStripCharFilterFactory"/>
+	    	<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[\.\,\;\:\?\!\\\/]\s" replacement=" | "/>
+            <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory"/>
+            <filter class="solr.LowerCaseFilterFactory" />
+            <filter class="solr.ShingleFilterFactory" minShingleSize="2" maxShingleSize="2" outputUnigrams="false"/>
+	    	<filter class="solr.StopFilterFactory" words="filter_tokens.txt" ignoreCase="true"/>
+          </analyzer>
+      </fieldType>
+
+  <fieldType name="trigram" class="solr.TextField" positionIncrementGap="100">
+          <analyzer>
+	    	<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="&lt;[\/]{0,1}[a-zA-Z]+[\s]{0,1}[\/]{0,1}&gt;" replacement=" | "/>
+            <charFilter class="solr.HTMLStripCharFilterFactory"/>
+	    	<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[\.\,\;\:\?\!\\\/]\s" replacement=" | "/>
+            <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory"/>
+            <filter class="solr.LowerCaseFilterFactory" />
+            <filter class="solr.ShingleFilterFactory" minShingleSize="3" maxShingleSize="3" outputUnigrams="false"/>
+	    	<filter class="solr.StopFilterFactory" words="filter_tokens.txt" ignoreCase="true"/>
+          </analyzer>
+      </fieldType>
+ </types>
+
+    <defaultSearchField>content</defaultSearchField>
 </schema>

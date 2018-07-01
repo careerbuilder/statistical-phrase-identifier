@@ -2,7 +2,7 @@
 <config>
   <luceneMatchVersion>5.10</luceneMatchVersion>
   <lib dir="../../lib" regex=".*\.jar" />
-  <dataDir>../../../cores/skg/data</dataDir>
+  <dataDir>../../../cores/spi/data</dataDir>
   <directoryFactory name="DirectoryFactory" 
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}">    
   </directoryFactory> 
@@ -64,10 +64,10 @@
 			<double name="likelihoodTrigramMultiplier">1.0</double>
 
 			<!-- bayesdoc thresholds -->
-			<double name="trigramTitleThreshold">0.8211652098678617</double> 
-			<double name="trigramThreshold">0.0901623462538611</double>
-			<double name="bigramTitleThreshold"> 0.7246403063105</double> 
-			<double name="bigramThreshold">0.05430213493807576</double>
+			<double name="trigramTitleThreshold">0.8212</double> 
+			<double name="trigramThreshold">0.0902</double>
+			<double name="bigramTitleThreshold"> 0.7246</double> 
+			<double name="bigramThreshold">0.0543</double>
 			
 			<!-- whether to return scoring data in the result -->
 			<bool name="returnScoringOutput">false</bool>
@@ -101,13 +101,6 @@
 			<double name="costModel14GramScoring">0</double>
 			<double name="costModel15GramScoring">0</double>
 			<double name="costModel16GramScoring">0</double>
-		</lst>
-	</requestHandler>
-
-  	<requestHandler name="/spi" class="com.careerbuilder.search.semantic.ParseRequestHandler">
-		<lst name="defaults">
-		</lst>
-		<lst name="invariants">
 		</lst>
 	</requestHandler>
 

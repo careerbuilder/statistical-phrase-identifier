@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="cb-semantic-search-parser" default="" basedir="./">
+<project name="statistical-phrase-identifier" default="" basedir="./">
     <property name="deploy.dir" value="deploy" />
-    <property name="version.solr" value="lucene_solr_5_1_0" />
+    <property name="version.solr" value="releases/lucene-solr/5.1.0" />
     <property name="git.solr" value="https://github.com/apache/lucene-solr" />
     <property name="local.dir.solr" value="lucene-solr" />
     <property name="local.dir.patches" value="patches" />
-    <!-- Will likely need to fork SolrTextTagger in future and modify below -->
     <property name="local.dir.spi" value="spi" />
 
     <!-- Make Maven Usable -->
@@ -65,7 +64,7 @@
     </target>
 
     <target name="build" depends="patch" description="Builds all dependencies">
-        <ant antfile="build.xml" dir="${basedir}/${local.dir.solr}/solr" target="example" />
+        <ant antfile="build.xml" dir="${basedir}/${local.dir.solr}/solr" target="server" />
         <exec executable="${maven.executable}" dir="${basedir}/${local.dir.spi}">
             <arg value="package" />
         </exec>

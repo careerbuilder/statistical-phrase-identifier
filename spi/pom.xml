@@ -5,14 +5,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.treygrainger</groupId>
-    <artifactId>lucene-solr-plugins</artifactId>
+    <groupId>com.careerbuilder.relevancy</groupId>
+    <artifactId>statistical-phrase-identifier</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-
-    <name>todo_pick_cool_name</name>
-    <description>todo</description>
+    <name>Statistical Phrase Identifier</name>
+    <description>Apache Solr plugin that parses text into most likely phrases based upon statistical occurrences in a corpus of data</description>
     <inceptionYear>2015</inceptionYear>
 
     <properties>
@@ -25,7 +24,6 @@
     </prerequisites>
 
     <dependencies>
-
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-test-framework</artifactId>
@@ -164,5 +162,13 @@
       	    </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>maven-restlet</id>
+            <name>Public online Restlet repository</name>
+            <url>http://maven.restlet.com</url>
+        </repository>
+    </repositories>
 
 </project>
