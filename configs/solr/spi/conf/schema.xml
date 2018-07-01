@@ -29,7 +29,6 @@ Should go back and make these configurable. While it will be a performance hit, 
     <copyField source="title" dest="trigrams_title" />
     <copyField source="description" dest="trigrams" />
 
-
     <!--Solr operational stuff-->
     <field name="_version_" type="long" indexed="true" stored="true"/>
     <field name="text" type="text" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
@@ -37,7 +36,7 @@ Should go back and make these configurable. While it will be a performance hit, 
 
   <types>    
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
-    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.LongPointField" docValues="true"/>
 
     <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
         <analyzer>
@@ -77,6 +76,4 @@ Should go back and make these configurable. While it will be a performance hit, 
           </analyzer>
       </fieldType>
  </types>
-
-    <defaultSearchField>content</defaultSearchField>
 </schema>

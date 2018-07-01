@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="statistical-phrase-identifier" default="" basedir="./">
     <property name="deploy.dir" value="deploy" />
-    <property name="version.solr" value="releases/lucene-solr/5.1.0" />
+    <property name="version.solr" value="releases/lucene-solr/7.4.0" />
     <property name="git.solr" value="https://github.com/apache/lucene-solr" />
     <property name="local.dir.solr" value="lucene-solr" />
     <property name="local.dir.patches" value="patches" />
@@ -53,17 +53,7 @@
         </git>
     </target>
 
-    <target name="patch" depends="pull">
-        <!-- Apply Solr Patch -->
-        <git command = "apply">
-            <args>
-                <arg value = "${local.dir.patches}/lucene_solr_5_1_0.patch"/>
-                <arg value = "--directory=${local.dir.solr}"/>
-            </args>
-		</git>
-    </target>
-
-    <target name="build" depends="patch" description="Builds all dependencies">
+    <target name="build" depends="pull" description="Builds all dependencies">
         <ant antfile="build.xml" dir="${basedir}/${local.dir.solr}/solr" target="server" />
         <exec executable="${maven.executable}" dir="${basedir}/${local.dir.spi}">
             <arg value="package" />
@@ -129,9 +119,9 @@
         </copy>
 
         <echo message="Integrating spi..."/>
-        <copy todir="${deploy.dir}/solr/server/lib">
+        <copy todir="${deploy.dir}/solr/server/solr/spi/lib">
             <fileset dir="${basedir}/spi/target">
-                <include name="*.jar"/>
+                <include name="statistical-phrase-identifier-*.jar"/>
             </fileset>
         </copy>
 

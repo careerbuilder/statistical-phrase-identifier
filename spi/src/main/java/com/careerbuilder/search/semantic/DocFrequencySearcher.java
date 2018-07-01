@@ -40,15 +40,15 @@ public class DocFrequencySearcher {
 
     private long getDocFrequency(NGram nGram, NGramField field) throws IOException {
         TermQuery[] query = new TermQuery[nGram.getLength()];
-        BooleanQuery booleanQuery = new BooleanQuery();
+        BooleanQuery.Builder booleanQueryBuilder =  new BooleanQuery.Builder();
 
         for(int i = 0; i < nGram.getLength(); ++i)
         {
             query[i] = new TermQuery(new Term(field.toString(), nGram.getSubNGram(i,1).toLowerCorpusString()));
-            booleanQuery.add(query[i], BooleanClause.Occur.MUST);
+            booleanQueryBuilder.add(query[i], BooleanClause.Occur.MUST);
         }
         TotalHitCountCollector collector = new TotalHitCountCollector();
-        searcher.search(booleanQuery, collector);
+        searcher.search(booleanQueryBuilder.build(), collector);
         return collector.getTotalHits();
     }
 }

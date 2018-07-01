@@ -4,3 +4,4 @@
 /deploy
 /cores
 /spi/target
+/spi/*.iml

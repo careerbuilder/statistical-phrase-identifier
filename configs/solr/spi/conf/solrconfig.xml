@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-  <luceneMatchVersion>5.10</luceneMatchVersion>
+  <luceneMatchVersion>7.4</luceneMatchVersion>
   <lib dir="../../lib" regex=".*\.jar" />
-  <dataDir>../../../cores/spi/data</dataDir>
+  <dataDir>${solr.data.dir:}</dataDir>
   <directoryFactory name="DirectoryFactory" 
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}">    
   </directoryFactory> 
@@ -80,7 +80,7 @@
 				lower than this are excluded from the parsing  -->
 			<double name="unigramProbabilityThreshold">1e-9</double>
 			<int name="unigramFrequencyThreshold">0</int>
-			
+			<str name="df">content</str>
 		</lst>
 		<lst name="invariants">
 		
@@ -115,9 +115,6 @@
                   class="solr.DocumentAnalysisRequestHandler" 
                   startup="lazy" />
 
-  <requestHandler name="/admin/" 
-                  class="solr.admin.AdminHandlers" />
-  
   <!-- ping/healthcheck -->
   <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
     <lst name="invariants">

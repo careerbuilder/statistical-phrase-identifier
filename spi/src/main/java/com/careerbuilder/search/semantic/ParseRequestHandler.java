@@ -57,15 +57,5 @@ public class ParseRequestHandler extends RequestHandlerBase
         return "Parses a phrase";
     }
 
-    @Override
-    public String getSource() {
-        return "$Source$";
-    }
-
-    @Override
-    public String getVersion() {
-        return "$Revision$";
-    }
-
 
 }
