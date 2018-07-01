@@ -20,7 +20,105 @@ Of course, you could do your own query parsing to specifically handle the boolea
 *"machine learning" AND "research and development" AND "Portland, OR" AND "software engineer" AND hadoop AND java*
 
 ## Building and Running
-The easiest way to build the Statistical Phrase Identifier is to run the `build.sh` script in the root directory of the project (or `rebuild.sh`, which will build and launch an Apache Solr instance with the Statistical Phrase Identifier configured). The final application will be found in the `deploy` directory, and you can launch it using the `restart-solr.sh` script found in that directory. You can simply copy this `deploy` folder to your production environment and run the `restart-solr.sh` script to launch the service. By default, you can hit it at `http://localhost:8983/solr/spi/parse`.
+The easiest way to build the Statistical Phrase Identifier is to run the `build.sh` script in the root directory of the project, which will pull and compile Apache Solr with the Statistical Phrase Identifier intalled and ready to use. The final application will be found in the `deploy` directory, which you can simply copy to your production environment to run the Statistical Phrase Identifier. 
+
+You can use the scripts in the `deploy/bin` directory to operate the Statistical Phrase Identifier. The available scripts include:
+* `start.sh`: used to start Apache Solr running the Statistical Phrase Identifier if no current instance is running (and otherwise leave any running instances alone).
+* `restart.sh`: will stop any currently running instances of Solr and start the Statistical Phrase Identifier cleanly.
+* `stop.sh`: will stop the Statistical Phrase Identifier
+* `debug.sh`: will restart the Statistical Phrase Identifier with remote JVM debugging enabled.
+* `load-data.sh`: will send all `.csv` files (or `.zip` files containing `.csv` files) in the `deploy/datasets/` directory to the Statistical Phrase Identifier to use as a language model for its statistical calculations. The Statistical Phrase Identifier expects CSVs of documents with the columns `id`, `title`, `description` (and optionally other fields, which you can configure in Solr's `schema.xml` found in `deploy/solr/server/solr/spi/conf/`).
+
+You can simply copy the `deploy/` folder to your production environment and run the `bin/start.sh` (if no current instances are running) or `bin/restart.sh` (recommended) script to launch the service. By default, you can hit it at `http://localhost:8983/solr/spi/parse?q=PHRASE_TO_PARSE`.
+
+After your initial build has completed, you also subsequently run `redeploy.sh` from the root directory, which will only rebuild and package the Statistical Phrase Identifier and skip the expensive step of building Solr again, and then start (or restart) the newly deployed version. This comes in handy during rapid development.
 
 ## Using the System
-Once the Statistical Phrase Identifier project has been built, you need to indexing a corpus of data through it by running the `feed.sh` script. The fields you include in your corpus should correspond to the fields defined in your Solr `schema.xml` found in the `deploy/solr/spi/conf` directory.
+Once the Statistical Phrase Identifier project has been built (`./build.sh`) and you have loaded a corpus of data into it (`deploy/bin/load-data.sh`), you can then send strings of text to the API to see how they are parsed based upon the language model built from the indexed data.
+
+The statistical phrase identifier ships with a sample dataset derived from Stack Exchange's Scifi dataset (located in `deploy/datasets/` once the project is built). Here is a sample query for that domain:
+### Request
+```
+http://localhost:8983/solr/spi/parse?q=darth vader obi wan kenobi anakin skywalker toad x men magneto professor xavier
+```
+
+Prior to running `deploy/bin/load-data.sh` all terms would be seen as independent since there is no data from which to calculate statistically-likely phrases:
+### Response (before loading data):
+```
+{
+  "responseHeader":{
+    "status":0,
+    "QTime":32},
+  "top_parsed_query":"{darth} {vader} {obi} {wan} {kenobi} {anakin} {skywalker} {toad} {x} {men} {magneto} {professor} {xavier}",
+  "top_parsed_phrases":["darth",
+    "vader",
+    "obi",
+    "wan",
+    "kenobi",
+    "anakin",
+    "skywalker",
+    "toad",
+    "x",
+    "men",
+    "magneto",
+    "professor",
+    "xavier"],
+  "potential_parsings":[{
+      "parsed_phrases":["darth",
+        "vader",
+        "obi",
+        "wan",
+        "kenobi",
+        "anakin",
+        "skywalker",
+        "toad",
+        "x",
+        "men",
+        "magneto",
+        "professor",
+        "xavier"],
+      "parsed_query":"{darth} {vader} {obi} {wan} {kenobi} {anakin} {skywalker} {toad} {x}-{men} {magneto} {professor} {xavier}",
+      "score":0.0}]}
+```
+
+After loading the Scifi dataset into the Statistical Phrase Idenfifier, however, you will then see the expected output, with the entities in the incoming query parsed out:
+### Response (after loading data):
+```
+{
+  "responseHeader":{
+    "status":0,
+    "QTime":25},
+  "top_parsed_query":"{darth vader} {obi wan kenobi} {anakin skywalker} {toad} {x men} {magneto} {professor xavier}",
+  "top_parsed_phrases":["darth vader",
+    "obi wan kenobi",
+    "anakin skywalker",
+    "toad",
+    "x-men",
+    "magneto",
+    "professor xavier"],
+  "potential_parsings":[{
+      "parsed_phrases":["darth vader",
+        "obi wan kenobi",
+        "anakin skywalker",
+        "toad",
+        "x-men",
+        "magneto",
+        "professor xavier"],
+      "parsed_query":"{darth vader} {obi wan kenobi} {anakin skywalker} {toad} {x-men} {magneto} {professor xavier}",
+      "score":0.0}]}
+```
+
+## TODO
+Document various configuration and language model options
+
+## TL;DR
+1. Run `./build.sh`
+2. `cd deploy/bin && ./restart.sh && ./load-data.sh`
+3. Go to `http://localhost:8983/solr/spi/parse?q=darth vader obi wan kenobi anakin skywalker toad x-men magneto professor xavier` in your favorite web browser
+### Curl
+```
+curl http://localhost:8983/solr/spi/parse?q=darth%20vader%20obi%20wan%20kenobi%20anakin%20skywalker%20toad%20x-men%20magneto%20professor%20xavier
+```
+
+4. Substitute in your own phrases in the `q=` parameter and integrate into your application as you see fit. Enjoy!
+

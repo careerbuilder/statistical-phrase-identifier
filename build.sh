@@ -1,13 +1,11 @@
 ant pull
-cd lucene-solr
+cd lucene-solr/
 ant ivy-bootstrap
 cd ../spi/
 mvn clean
 mvn package
 cd ../
 ant package
-cd deploy
-chmod +x restart-solr.sh
-chmod +x restart-solr-dbg.sh
-chmod +x feed.sh
+cd deploy/
+chmod -R +x bin
 chmod +x solr/bin/solr

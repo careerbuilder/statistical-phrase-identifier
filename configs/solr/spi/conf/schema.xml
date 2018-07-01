@@ -29,8 +29,12 @@ Should go back and make these configurable. While it will be a performance hit, 
     <copyField source="title" dest="trigrams_title" />
     <copyField source="description" dest="trigrams" />
 
+
+    <!-- StackExchange demo data requires preserving author field -->
+    <field name="author" type="string" indexed="false" stored="false" required="false" multiValued="false"/>
+
     <!--Solr operational stuff-->
-    <field name="_version_" type="long" indexed="true" stored="true"/>
+    <field name="_version_" type="long" indexed="true" stored="false"/>
     <field name="text" type="text" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
   </fields>
 

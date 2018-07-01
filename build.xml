@@ -61,37 +61,44 @@
     </target>
 
     <target name="package-nobuild" description="Bundles up pre-built artifacts into a distribution">
-        <echo message="Creating required directories..."/>
+         <echo message="Creating required directories..."/>
         <mkdir dir="${deploy.dir}"/>
 
         <echo message="Packaging up Solr..."/>
-		<copy todir="${deploy.dir}/solr">
+        <copy todir="${deploy.dir}/solr">
             <fileset dir="${basedir}/lucene-solr/solr/">
                 <include name="server/**"/>
             </fileset>
-		</copy>
+        </copy>
 
-		<copy todir="${deploy.dir}/solr">
+        <copy todir="${deploy.dir}/solr">
             <fileset dir="${basedir}/lucene-solr/solr/">
                 <include name="bin/solr"/>
             </fileset>
-		</copy>
+        </copy>
 
-		<copy todir="${deploy.dir}/solr/server">
+        <copy todir="${deploy.dir}/solr/server">
             <fileset dir="${basedir}/configs/" includes="solr/**" />
         </copy>
 
         <echo message="Integrating spi..."/>
-        <copy todir="${deploy.dir}/solr/server/lib">
+        <copy todir="${deploy.dir}/solr/server/solr/spi/lib">
             <fileset dir="${basedir}/spi/target">
-                <include name="*.jar"/>
+                <include name="statistical-phrase-identifier-*.jar"/>
             </fileset>
         </copy>
 
-        <echo message="Integrating Startup Script"/>
-        <copy todir="${deploy.dir}">
-            <fileset dir="${basedir}/configs">
-                <include name="*.sh"/>
+        <echo message="Integrating Startup Scripts"/>
+        <copy todir="${deploy.dir}/bin">
+            <fileset dir="${basedir}/configs/bin">
+                <include name="*"/>
+            </fileset>
+        </copy>
+        
+        <echo message="Integrating Example Dataset"/>
+        <copy todir="${deploy.dir}/datasets">
+            <fileset dir="${basedir}/configs/datasets">
+                <include name="*"/>
             </fileset>
         </copy>
     </target>
@@ -125,12 +132,20 @@
             </fileset>
         </copy>
 
-        <echo message="Integrating Startup Script"/>
-        <copy todir="${deploy.dir}">
-            <fileset dir="${basedir}/configs">
-                <include name="*.sh"/>
+        <echo message="Integrating Startup Scripts"/>
+        <copy todir="${deploy.dir}/bin">
+            <fileset dir="${basedir}/configs/bin">
+                <include name="*"/>
             </fileset>
         </copy>
+        
+        <echo message="Integrating Example Dataset"/>
+        <copy todir="${deploy.dir}/datasets">
+            <fileset dir="${basedir}/configs/datasets">
+                <include name="*"/>
+            </fileset>
+        </copy>
+
     </target>
     
 </project>
