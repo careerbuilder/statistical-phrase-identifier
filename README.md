@@ -20,18 +20,18 @@ Of course, you could do your own query parsing to specifically handle the boolea
 *"machine learning" AND "research and development" AND "Portland, OR" AND "software engineer" AND hadoop AND java*
 
 ## Building and Running
-The easiest way to build the Statistical Phrase Identifier is to run the `build.sh` script in the root directory of the project, which will pull and compile Apache Solr with the Statistical Phrase Identifier intalled and ready to use. The final application will be found in the `deploy` directory, which you can simply copy to your production environment to run the Statistical Phrase Identifier. 
+The easiest way to build the Statistical Phrase Identifier is to run the `build.sh` script in the root directory of the project, which will pull and compile Apache Solr with the Statistical Phrase Identifier intalled and ready to use. The final application will be found in the `deploy/` directory, which you can simply copy to your production environment to run the Statistical Phrase Identifier. 
 
-You can use the scripts in the `deploy/bin` directory to operate the Statistical Phrase Identifier. The available scripts include:
-* `start.sh`: used to start Apache Solr running the Statistical Phrase Identifier if no current instance is running (and otherwise leave any running instances alone).
-* `restart.sh`: will stop any currently running instances of Solr and start the Statistical Phrase Identifier cleanly.
+You can use the scripts in the `deploy/bin/` directory to operate the Statistical Phrase Identifier. The available scripts include:
+* `start.sh`: used to start Apache Solr running the Statistical Phrase Identifier if no current instance is running (and otherwise leave any running instances alone)
+* `restart.sh`: will stop any currently running instances of Solr and start the Statistical Phrase Identifier cleanly
 * `stop.sh`: will stop the Statistical Phrase Identifier
-* `debug.sh`: will restart the Statistical Phrase Identifier with remote JVM debugging enabled.
+* `debug.sh`: will restart the Statistical Phrase Identifier with remote JVM debugging enabled
 * `load-data.sh`: will send all `.csv` files (or `.zip` files containing `.csv` files) in the `deploy/datasets/` directory to the Statistical Phrase Identifier to use as a language model for its statistical calculations. The Statistical Phrase Identifier expects CSVs of documents with the columns `id`, `title`, `description` (and optionally other fields, which you can configure in Solr's `schema.xml` found in `deploy/solr/server/solr/spi/conf/`).
 
-You can simply copy the `deploy/` folder to your production environment and run the `bin/start.sh` (if no current instances are running) or `bin/restart.sh` (recommended) script to launch the service. By default, you can hit it at `http://localhost:8983/solr/spi/parse?q=PHRASE_TO_PARSE`.
+You can simply copy the `deploy/` folder to your production environment and run the `bin/start.sh` script (if no current instances are running) or the `bin/restart.sh` script (recommended) to launch the service. By default, you can the access the API for the Statistical Phrase Identifier at `http://localhost:8983/solr/spi/parse?q=PHRASE_TO_PARSE`.
 
-After your initial build has completed, you also subsequently run `redeploy.sh` from the root directory, which will only rebuild and package the Statistical Phrase Identifier and skip the expensive step of building Solr again, and then start (or restart) the newly deployed version. This comes in handy during rapid development.
+After your initial build has completed, you can also subsequently run `redeploy.sh` from the root directory, which will only rebuild and package the Statistical Phrase Identifier and skip the expensive step of building Solr again, and then start (or restart) the newly deployed version. This comes in handy during rapid development.
 
 ## Using the System
 Once the Statistical Phrase Identifier project has been built (`./build.sh`) and you have loaded a corpus of data into it (`deploy/bin/load-data.sh`), you can then send strings of text to the API to see how they are parsed based upon the language model built from the indexed data.
@@ -42,7 +42,7 @@ The statistical phrase identifier ships with a sample dataset derived from Stack
 http://localhost:8983/solr/spi/parse?q=darth vader obi wan kenobi anakin skywalker toad x men magneto professor xavier
 ```
 
-Prior to running `deploy/bin/load-data.sh` all terms would be seen as independent since there is no data from which to calculate statistically-likely phrases:
+Prior to running `deploy/bin/load-data.sh` all terms would be seen as independent since there is no data from which to calculate any statistically-likely phrases:
 ### Response (before loading data):
 ```
 {
@@ -81,7 +81,7 @@ Prior to running `deploy/bin/load-data.sh` all terms would be seen as independen
       "score":0.0}]}
 ```
 
-After loading the Scifi dataset into the Statistical Phrase Idenfifier, however, you will then see the expected output, with the entities in the incoming query parsed out:
+After loading the Scifi dataset into the Statistical Phrase Idenfifier, however, you will then see more meaningful output with the phrases in the incoming query parsed out:
 ### Response (after loading data):
 ```
 {
@@ -113,12 +113,11 @@ Document various configuration and language model options
 
 ## TL;DR
 1. Run `./build.sh`
-2. `cd deploy/bin && ./restart.sh && ./load-data.sh`
+2. `cd deploy/bin/ && ./restart.sh && ./load-data.sh`
 3. Go to `http://localhost:8983/solr/spi/parse?q=darth vader obi wan kenobi anakin skywalker toad x-men magneto professor xavier` in your favorite web browser
-### Curl
+#### Curl Command:
 ```
 curl http://localhost:8983/solr/spi/parse?q=darth%20vader%20obi%20wan%20kenobi%20anakin%20skywalker%20toad%20x-men%20magneto%20professor%20xavier
 ```
 
 4. Substitute in your own phrases in the `q=` parameter and integrate into your application as you see fit. Enjoy!
-
